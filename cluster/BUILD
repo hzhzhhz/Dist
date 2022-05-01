@@ -1,0 +1,11 @@
+cc_library(
+    name="consistent",
+    srcs="consistent.cc",
+)
+cc_test(
+    name="consistent_test",
+    srcs="consistent_test.cc",
+    deps=[
+        ":consistent",
+    ]
+)
