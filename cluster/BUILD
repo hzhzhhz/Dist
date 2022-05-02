@@ -1,11 +1,15 @@
 cc_library(
     name="consistent",
-    srcs="consistent.cc",
+    srcs=["consistent.cc"],
+    hdrs=["consistent.h"]
 )
 cc_test(
     name="consistent_test",
-    srcs="consistent_test.cc",
+    srcs=["consistent_test.cc"],
     deps=[
         ":consistent",
+        "@gflags//:gflags",
+        "@gtest//:gtest",
+        "@gtest//:gtest_main",
     ]
 )

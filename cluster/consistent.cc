@@ -6,7 +6,7 @@ int32_t Consistent::Add(const std::string& key) {
     return 0;
   }
   members[key] = true;
-  for (int i = 0; i < replicate; ++i) {
+  for (uint32_t i = 0; i < replicate; ++i) {
     uint32_t h = Hash(key + std::to_string(i));
     slots[h] = key;
     sort_.insert(h);

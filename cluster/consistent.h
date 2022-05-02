@@ -12,19 +12,15 @@ using std::set;
 using std::string;
 struct Consistent {
  public:
+ Consistent(uint32_t r):replicate(r){
+
+ }
   int32_t Add(const string& key);
-  std::string Get(const std::string& key) {
-    uint32_t h = Hash(key);
-    auto it = slots.lower_bound(h);
-    if (it == slots.end()) {
-      return slots.begin()->second;
-    }
-    return it->second;
-  }
+  std::string Get(const std::string& key);
   uint32_t Hash(std::string key) {
     const int p = 16777619;
     uint32_t hash = 2166136261;
-    for (int idx = 0; idx < key.size(); ++idx) {
+    for (size_t idx = 0; idx < key.size(); ++idx) {
       hash = (hash ^ key[idx]) * p;
     }
     hash += hash << 13;
@@ -39,12 +35,13 @@ struct Consistent {
   }
   int Remove(const std::string& key) {
     mutex_.lock();
-    for (int i = 0; i < replicate; ++i) {
+    for ( uint32_t i= 0; i < replicate; ++i) {
       uint32_t h = Hash(key + std::to_string(i));
       slots.erase(h);
       sort_.erase(h);
     }
     mutex_.unlock();
+    return 0;
   }
 
  private:
