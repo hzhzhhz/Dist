@@ -1,0 +1,135 @@
+syntax= "proto3";
+package message;
+
+
+enum Type {
+  SYNC = 0;
+  SET = 1;
+  GET = 2;
+  DEL = 3;
+}
+
+enum StatusCode {
+  kOk = 0;
+  kNotFound = 1;
+  kWait = 2;
+  kError = 3;
+  kFallback = 4;
+  kMove = 5;
+}
+
+message Node {
+   string ip = 1;
+   int32 port = 2;
+}
+
+message SyncOffset {
+   int32 filenum = 1;
+   int64 offset = 2;
+   int32 partition = 3;
+}
+
+message KeyExpire {
+   int32 base = 1;
+   int32 ttl = 2;
+}
+
+message SlaveFallback {
+   int64 time = 1;
+   SyncOffset before = 2;
+   SyncOffset after = 3;
+}
+
+message PartitionState {
+   int32 partition_id = 1; 
+   string role = 2;
+   string repl_state = 3;
+   Node master = 4;
+  repeated Node slaves = 5;
+   SyncOffset sync_offset = 6;
+   SlaveFallback fallback = 7;
+}
+
+message CmdRequest {
+   Type type = 1;
+
+  message Set {
+     string table_name = 1;
+     string key = 2;
+     bytes value = 3;
+     string uuid = 4;
+     KeyExpire expire  = 5;
+  }
+   Set set = 2;
+
+  message Get {
+     string table_name = 1;
+     string key = 2;
+     string uuid = 3;
+  }
+   Get get = 3;
+
+  // Delete
+  message Del {
+     string table_name = 1;
+     string key = 2;
+     string uuid = 3;
+  }
+   Del del = 4;
+
+  message Info {
+     string table_name = 1; 
+  }
+   Info info = 5;
+
+}
+
+message CmdResponse {
+   Type type = 1;
+   StatusCode code = 2;
+   string msg = 3;
+
+  message Get {
+     bytes value = 1;
+  }
+   Get get = 4;
+  
+   Node redirect = 5;
+  
+  // InfoStats
+  message InfoStats {
+     string table_name = 1;
+     int64 total_querys = 2;
+     int32 qps = 3;
+     string latency_info = 4;
+  }
+  repeated InfoStats info_stats = 6;
+
+  // InfoCapacity
+  message InfoCapacity {
+     string table_name = 1;
+     int64 used = 2;
+     int64 remain = 3;
+  }
+  repeated InfoCapacity info_capacity = 7;
+
+  // InfoRepl
+  message InfoRepl {
+     string table_name = 1;
+     int64 partition_cnt = 2;
+    repeated PartitionState partition_state = 3;
+  }
+  repeated InfoRepl info_repl = 8;
+
+
+  // InfoServer
+  message InfoServer {
+     int64 epoch = 1;
+    repeated string table_names = 2;
+     Node cur_meta = 3;
+     bool meta_renewing = 4; 
+  }
+   InfoServer info_server = 9;
+
+}
+
