@@ -130,6 +130,8 @@ message CmdResponse {
      bool meta_renewing = 4; 
   }
    InfoServer info_server = 9;
-
+}
+service NodeService{
+     rpc Cmd(CmdRequest)returns (CmdResponse){}
 }
 

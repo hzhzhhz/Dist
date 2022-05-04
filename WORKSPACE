@@ -24,14 +24,14 @@ bind(
 #    remote="https://github.com/gflags/gflags.git",
 #)
 local_repository(
-    name="com_github_gflags",
+    name="com_github_gflags_gflags",
     path="third_party/gflags-gflags",
     #build_file="third_party/gflags.BUILD"
 )
-bind(
-    name = "gflags",
-    actual = "@com_github_gflags//:gflags",
-)
+#bind(
+#    name = "gflags",
+#    actual = "@com_github_gflags//:gflags",
+#)
 
 
 local_repository(
@@ -43,6 +43,26 @@ bind(
     name = "glog",
     actual = "@com_github_glog//:glog",
 )
+
+local_repository(
+    name="com_github_grpc_grpc",
+    path="third_party/grpc-grpc",
+    #build_file="third_party/gflags.BUILD"
+)
+bind(
+    name = "grpc",
+    actual = "@com_github_grpc_grpc//:grpc",
+)
+bind(
+    name = "grpc++",
+    actual = "@com_github_grpc_grpc//:grpc++",
+)
+#local_repository(
+#    name="upb",
+#    path="third_party/upb",
+    #build_file="third_party/gflags.BUILD"
+#)
+
 #http_archive(
 #    name = "com_github_facebook_rocksdb",
 #    url = "https://github.com/facebook/rocksdb/archive/v6.26.0.tar.gz",
@@ -62,7 +82,7 @@ bind(
 )
 
 #new_git_repository(
-#    name = "com_github_madler_zlib",
+#    name = "zlib",
 #    remote = "https://github.com/madler/zlib.git",
 #    tag = "v1.2.11",
     #sha256 = "629380c90a77b964d896ed37163f5c3a34f6e6d897311f1df2a7016355c45eff",
@@ -70,14 +90,14 @@ bind(
 #)
 
 new_local_repository(
-    name="com_github_madler_zlib",
+    name="zlib",
     path="third_party/zlib",
     build_file="build/zlib.BUILD"
 )
-bind(
-    name = "zlib",
-    actual = "@com_github_madler_zlib//:zlib",
-)
+#bind(
+#    name = "zlib",
+#    actual = "@com_github_madler_zlib//:zlib",
+#)
 
 new_local_repository(
     name="com_github_google_snappy",
@@ -143,13 +163,68 @@ bind(
 #   url = "https://github.com/google/protobuf/archive/ab8edf1dbe2237b4717869eaab11a2998541ad8d.tar.gz",
 #)
 
-local_repository(
-    name="com_google_protobuf",
-    path="third_party/protobuf",
-)
-bind(
-    name = "protobuf",
-    actual = "@com_google_protobuf//:protobuf",
+#local_repository(
+#    name="com_google_protobuf",
+#    path="third_party/protobuf",
+#)
+#bind(
+#    name = "protobuf",
+#    actual = "@com_google_protobuf//:protobuf",
+#)
+
+http_archive(
+    name = "rules_cc",
+    sha256 = "35f2fb4ea0b3e61ad64a369de284e4fbbdcdba71836a5555abb5e194cf119509",
+    strip_prefix = "rules_cc-624b5d59dfb45672d4239422fa1e3de1822ee110",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_cc/archive/624b5d59dfb45672d4239422fa1e3de1822ee110.tar.gz",
+        "https://github.com/bazelbuild/rules_cc/archive/624b5d59dfb45672d4239422fa1e3de1822ee110.tar.gz",
+    ],
 )
 
 
+# rules_proto defines abstract rules for building Protocol Buffers.
+http_archive(
+    name = "rules_proto",
+    sha256 = "2490dca4f249b8a9a3ab07bd1ba6eca085aaf8e45a734af92aad0c42d9dc7aaf",
+    strip_prefix = "rules_proto-218ffa7dfa5408492dc86c01ee637614f8695c45",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_proto/archive/218ffa7dfa5408492dc86c01ee637614f8695c45.tar.gz",
+        "https://github.com/bazelbuild/rules_proto/archive/218ffa7dfa5408492dc86c01ee637614f8695c45.tar.gz",
+    ],
+)
+
+
+http_archive(
+    name = "rules_proto_grpc",
+    sha256 = "507e38c8d95c7efa4f3b1c0595a8e8f139c885cb41a76cab7e20e4e67ae87731",
+    strip_prefix = "rules_proto_grpc-4.1.1",
+    urls = ["https://github.com/rules-proto-grpc/rules_proto_grpc/archive/4.1.1.tar.gz"],
+)
+
+load("@rules_proto_grpc//:repositories.bzl", "rules_proto_grpc_toolchains", "rules_proto_grpc_repos")
+rules_proto_grpc_toolchains()
+rules_proto_grpc_repos()
+
+load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
+rules_proto_dependencies()
+rules_proto_toolchains()
+
+
+load("@com_github_grpc_grpc//bazel:grpc_deps.bzl", "grpc_deps")
+grpc_deps()
+#load("@com_github_grpc_grpc//bazel:grpc_extra_deps.bzl", "grpc_extra_deps")
+#grpc_extra_deps()
+
+load("@rules_cc//cc:repositories.bzl", "rules_cc_dependencies")
+rules_cc_dependencies()
+
+
+load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
+rules_proto_dependencies()
+rules_proto_toolchains()
+
+
+load("@rules_proto_grpc//cpp:repositories.bzl", "cpp_repos")
+
+cpp_repos()
