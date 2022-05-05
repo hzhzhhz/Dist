@@ -6,6 +6,7 @@
 #include <string>
 
 #include "proto/message.pb.h"
+#include "proto/message.grpc.pb.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;

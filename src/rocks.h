@@ -1,10 +1,10 @@
 #ifndef _ROCKS_H_
 #define _ROCKS_H_
-
 #include <rocksdb/db.h>
 #include <rocksdb/options.h>
 #include <rocksdb/table.h>
 #include <rocksdb/utilities/backupable_db.h>
+
 class Storage {
  public:
   Storage() {}
