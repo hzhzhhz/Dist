@@ -24,7 +24,12 @@ cc_proto_library(
     #protoc="@com_google_protobuf//:protoc",
 )
 
-#cpp_proto_compile(
-##    name = "message_cc_proto",
- #   protos = [":message_proto"],
-#)
+proto_library(
+    name="meta_proto",
+    srcs=["meta.proto"],
+)
+cpp_grpc_library(
+    name="meta_grpc",
+    protos=[":meta_proto"],
+    visibility = ["//visibility:public"],
+)

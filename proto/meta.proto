@@ -1,0 +1,188 @@
+syntax= "proto3";
+package Meta;
+
+enum StatusCode {
+  OK = 0;
+  NOTFOUND = 1;
+  ERROR = 2;
+}
+
+enum Type {
+  PING = 0;
+  PULL = 1;
+  INIT = 2;
+  SETMASTER = 3;
+  ADDSLAVE = 4;
+  REMOVESLAVE = 5;
+  LISTNODE = 6;
+  LISTMETA = 7;
+  METASTATUS = 8;
+  MIGRATE = 9;
+}
+
+enum PState {
+  ACTIVE = 0;
+  STUCK = 1;
+  SLOWDOWN = 2;
+}
+
+enum NodeState {
+  UP = 0;
+  DOWN = 1;
+}
+
+message Node {
+   string ip = 1;
+   int32 port = 2;
+}
+
+message NodeStatus {
+   Node node = 1;
+   NodeState status = 2;
+}
+
+message Nodes {
+  repeated NodeStatus nodes = 1;
+}
+
+message MetaNodes {
+  repeated Node followers = 1;
+   Node leader = 2;
+}
+
+message MetaLeader {
+   Node leader = 1;
+   int64 last_active = 2;
+}
+
+message Partitions {
+   int32 id = 1;
+   PState state = 2;
+   Node master = 3;
+  repeated Node slaves = 4;
+}
+
+
+message BasicCmdUnit {
+   string name = 1;
+   int32 partition = 2;
+   Node node = 3;
+}
+
+
+message SyncOffset {
+   string table_name = 1;
+   int32 partition = 2;
+   int32 filenum = 3;
+   int64 offset = 4;
+}
+
+message MigrateStatus {
+   int64 begin_time = 1;
+   int32 complete_proportion = 2;
+}
+
+// Internal use by meta
+message MigrateHead {
+   int64 begin_time = 1;
+   int32 init_size = 2;
+  repeated string diff_name = 3;
+}
+
+message MetaCmdRequest {
+
+   Type type = 1;
+
+  // Ping 
+  message Ping {
+     int32 version = 1;
+     Node node = 2;
+    repeated SyncOffset offset = 3;
+  }
+   Ping ping = 2;
+
+  // Pull
+  message Pull {
+     Node node = 1;
+     string name = 2;
+  }
+   Pull pull = 3;
+
+  message SetMaster{
+     BasicCmdUnit basic = 1;
+  }
+   SetMaster set_master = 5;
+
+  message AddSlave {
+     BasicCmdUnit basic = 1;
+  }
+   AddSlave add_slave = 6;
+
+  message RemoveSlave {
+     BasicCmdUnit basic = 1;
+  }
+   RemoveSlave remove_slave = 7;
+
+  message DropTable {
+     string name = 1;
+  }
+   DropTable drop_table = 8;
+
+  message Migrate {
+     int32 origin_epoch = 1;
+  }
+   Migrate migrate = 9;
+
+  message RemoveNodes {
+    repeated Node nodes = 1;
+  }
+   RemoveNodes remove_nodes = 10;
+
+   Node add_meta_node = 11;
+
+   Node remove_meta_node = 12;
+}
+
+message MetaCmdResponse {
+
+   Type type = 1;
+   StatusCode code = 2;
+   string msg = 3;
+
+  // Ping
+  message Ping {
+     int32 version = 1;
+  }
+   Ping ping = 4;
+
+  // Pull
+  message Pull {
+     int32 version = 1;
+    repeated Node meta_members = 3;
+  }
+   Pull pull = 5;
+
+  // ListNode
+  message ListNode {
+     Nodes nodes = 1;
+  }
+   ListNode list_node = 7;
+
+  // ListMeta
+  message ListMeta {
+     MetaNodes nodes = 1;  
+  }
+   ListMeta list_meta = 8;
+
+  // MetaStatus
+  message MetaStatus {
+     int32 version = 1;
+     string consistency_stautus = 2;
+     MigrateStatus migrate_status = 3; // has means is migrating
+  }
+   MetaStatus meta_status = 9;
+}
+
+service MetaService{
+     rpc Command(MetaCmdRequest)returns (MetaCmdResponse){}
+}
