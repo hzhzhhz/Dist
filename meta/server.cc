@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "meta_server.h"
 #include "proto/meta.grpc.pb.h"
 #include "proto/meta.pb.h"
 

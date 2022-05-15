@@ -157,6 +157,45 @@ bind(
     actual = "@com_github_facebook_zstd//:zstd",
 )
 
+new_local_repository(
+    name="com_github_360_floyd",
+    path="third_party/floyd",
+    build_file="build/floyd.BUILD"
+)
+bind(
+    name = "floyd",
+    actual = "@com_github_360_floyd//:floyd",
+)
+
+new_local_repository(
+    name="com_github_pink",
+    path="third_party/pink",
+    build_file="build/pink.BUILD"
+)
+bind(
+    name = "pink",
+    actual = "@com_github_pink//:pink",
+)
+
+new_local_repository(
+    name="com_github_slash",
+    path="third_party/slash",
+    build_file="build/slash.BUILD"
+)
+bind(
+    name = "slash",
+    actual = "@com_github_slash//:slash",
+)
+
+new_local_repository(
+    name="com_github_protobuf",
+    path="third_party/protobuf",
+    build_file="build/protobuf.BUILD"
+)
+bind(
+    name = "protobuf",
+    actual = "@com_github_protobuf//:protobuf",
+)
 #http_archive(
 #    name = "com_google_protobuf",
 #    strip_prefix = "protobuf-ab8edf1dbe2237b4717869eaab11a2998541ad8d",
